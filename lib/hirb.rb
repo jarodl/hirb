@@ -4,5 +4,4 @@ $: << File.join(File.dirname(__FILE__))
 
 require 'hirb/app'
 require 'hirb/eval'
-require 'hirb/static'
 

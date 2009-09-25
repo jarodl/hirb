@@ -5,6 +5,9 @@ $binding ||= binding
 class Hirb::Eval
   class << self
     def eval(cmd)
+      puts "=" * 80
+      puts cmd
+      puts "=" * 80
       JSON.generate(
         steal_output { Kernel.eval("_ = #{cmd}", $binding) }
       )

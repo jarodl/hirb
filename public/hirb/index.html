@@ -63,10 +63,13 @@
             $.get("/hirb/eval?cmd=" + escape($('#code').val()), function(json) {
       				json = eval('(' + json + ')')
       
-      				console.log(json.locals);
-      
-      				if(json.out != "") {
-        				$('<li class="stdout"></li>').text(json.out).insertBefore('#irb ul li.code:last')
+      				if(json.out.length) {
+        				$('<li class="stdout"></li>').text(json.out.join("\n")).insertBefore('#irb ul li.code:last')
+      				}
+      				if(json.err.length) {
+                jQuery.each(json.err, function() {
+                  $('<li class="stderr"></li>').text(this.toString()).insertBefore('#irb ul li.code:last')
+                });
       				}
       				if(json.result) {
       					$('<li class="result"></li>').text(json.result).insertBefore('#irb ul li.code:last')
