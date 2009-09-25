@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <title>hirb</title>
+
+    <style type="text/css">
+      #irb * {
+        font-family: "Andale Mono", "Monaco", monospace;
+        font-size: 14px;
+      }
+      #irb {
+        border: 1px solid #43d;
+        background: #fff;
+      
+      }
+      #irb ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      #irb ul li {
+        margin: 0;
+        padding: 0 5px;
+      }
+      #irb ul li.code:before {
+        content: "> ";
+        color: #ddddff;
+      }
+      #irb ul li.result:before {
+        content: "# => ";
+        color: #0000ff;
+      }
+      #irb ul li.result {
+        font-style: italic;
+        color: #888;
+      }
+      #irb input {
+        border: 0;
+        padding: 0;
+        margin: 0;
+        width: 85%;
+      }
+    </style>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var commands = [];
+        var commandIndex = null;
+        var tempCommand = null;
+      
+        $("#irb input#code").focus(function() {
+          window.p.smartPlaylistFormFocus = true;
+        }).blur(function() {
+          window.p.smartPlaylistFormFocus = false;
+        });
+      
+        $('#irb input#code').keypress(function(e) {
+          if(e.keyCode == 13) {
+        		$('<li class="code">' + $('#code').val() + '</li>').insertBefore('#irb ul li.code:last');
+      
+            $.get("/hirb/eval?cmd=" + escape($('#code').val()), function(json) {
+      				json = eval('(' + json + ')')
+      
+      				console.log(json.locals);
+      
+      				if(json.out != "") {
+        				$('<li class="stdout"></li>').text(json.out).insertBefore('#irb ul li.code:last')
+      				}
+      				if(json.result) {
+      					$('<li class="result"></li>').text(json.result).insertBefore('#irb ul li.code:last')
+      				}
+            })
+      
+            if(commands[commands.length - 1] != $('#code').val()) {
+              commands.push($('#code').val());
+            }
+            commandIndex = null;
+            tempCommand  = null;
+      
+        		$('#code').val("").focus();
+      		} else if(e.keyCode == 38) { // Pressed up
+            if(!tempCommand) {
+              tempCommand = $('#code').val();
+              commandIndex = commands.length;
+            }
+      
+            if(commandIndex != 0) {
+              commandIndex -= 1;
+            }
+      
+            $('#code').val(commands[commandIndex]);
+          } else if(e.keyCode == 40) { // Pressed down
+            if(tempCommand) {
+              if(commandIndex != commands.length - 1) {
+                commandIndex += 1;
+                $('#code').val(commands[commandIndex]);
+              } else {
+                commandIndex = null;
+                $('#code').val(tempCommand);
+                tempCommand = null;
+              }
+            }
+          }
+      
+          console.log("tempCommand: " + (tempCommand || "null"));
+          console.log("commandIndex: " + (commandIndex || "null"));
+        });
+      });
+    </script>
+
+
+  </head>
+  <body>
+    <div id="irb">
+      <ul>
+        <li class="code"><input type="text" id="code" /></li>
+      </ul>
+    </div>
+  </body>
+</html>
+

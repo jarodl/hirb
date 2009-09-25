@@ -6,7 +6,7 @@ class Hirb::Eval
   class << self
     def eval(cmd)
       JSON.generate(
-        steal_output { eval("_ = #{cmd}", $binding) }
+        steal_output { Kernel.eval("_ = #{cmd}", $binding) }
       )
     end
   
@@ -22,12 +22,16 @@ class Hirb::Eval
         result = b.call.inspect
       rescue
         $stderr.puts $!
+        $stderr.puts $!.backtrace
+
+        stderr.puts $!
+        stderr.puts $!.backtrace
       end
   
       r = {
         :result => result,
-        :out    => $stdout.string,
-        :err    => $stderr.string
+        :out    => $stdout.string.split("\n"),
+        :err    => $stderr.string.split("\n")
       }
   
       # Set stdout and stderr back
