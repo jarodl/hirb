@@ -1,7 +1,7 @@
 
 Gem::Specification.new do |s|
   s.name = "hirb"
-  s.version = "0.1.1"
+  s.version = "0.1.5"
 
   s.authors = ["Justin Camerer"]
   s.email = "iamjwc@gmail.com"
