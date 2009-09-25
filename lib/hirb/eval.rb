@@ -4,7 +4,7 @@ $binding ||= binding
 
 class Hirb::Eval
   class << self
-    def eval(cmd)
+    def boom_shakalaka(cmd)
       puts "=" * 80
       puts cmd
       puts "=" * 80
